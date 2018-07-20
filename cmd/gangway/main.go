@@ -78,6 +78,7 @@ func main() {
 	// middleware'd routes
 	http.Handle("/logout", loginRequiredHandlers.ThenFunc(logoutHandler))
 	http.Handle("/commandline", loginRequiredHandlers.ThenFunc(commandlineHandler))
+	http.Handle("/kubeconf", loginRequiredHandlers.ThenFunc(kubeConfigHandler))
 
 	bindAddr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 	// create http server with timeouts
@@ -91,7 +92,11 @@ func main() {
 	go func() {
 		// exit with FATAL logging why we could not start
 		// example: FATA[0000] listen tcp 0.0.0.0:8080: bind: address already in use
-		log.Fatal(httpServer.ListenAndServe())
+		if cfg.ServeTLS == true {
+			log.Fatal(httpServer.ListenAndServeTLS(cfg.CertFile, cfg.KeyFile))
+		} else {
+			log.Fatal(httpServer.ListenAndServe())
+		}
 	}()
 
 	// create channel listening for signals so we can have graceful shutdowns
