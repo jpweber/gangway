@@ -32,7 +32,7 @@ import (
 )
 
 const (
-	templatesBase  = "templates"
+	templatesBase  = "/templates"
 	kubeConfigFile = "gangway.kubeconfig"
 )
 
@@ -52,9 +52,9 @@ type userInfo struct {
 func serveTemplate(tmplFile string, data interface{}, w http.ResponseWriter) {
 
 	templatePath := filepath.Join(templatesBase, tmplFile)
-	templateData, err := Asset(templatePath)
+	templateData, err := FSString(false, templatePath)
 	if err != nil {
-		log.Errorf("Failed to find template asset: %s", tmplFile)
+		log.Errorf("Failed to find template asset: %s at path: %s", tmplFile, templatePath)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -66,7 +66,7 @@ func serveTemplate(tmplFile string, data interface{}, w http.ResponseWriter) {
 
 func generateKubeConfig(tmplFile string, data interface{}) {
 	templatePath := filepath.Join(templatesBase, tmplFile)
-	templateData, err := Asset(templatePath)
+	templateData, err := FSString(false, templatePath)
 	if err != nil {
 		log.Errorf("Failed to find template asset: %s", tmplFile)
 		return
