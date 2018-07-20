@@ -77,7 +77,7 @@ func generateKubeConfig(tmplFile string, data interface{}) {
 	// create buffered io writer
 	w := bufio.NewWriter(f)
 
-	tmpl := template.New(tmplFile)
+	tmpl := template.New(tmplFile).Funcs(FuncMap())
 	tmpl, err = tmpl.Parse(string(templateData))
 	if err != nil {
 		log.Errorf("Error parsing kubeconfig template: %s", err)
